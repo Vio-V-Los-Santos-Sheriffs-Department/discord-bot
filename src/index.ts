@@ -2,16 +2,17 @@ import { Client, Snowflake } from 'discord.js';
 import {CommandHandler} from "./utils/CommandHandler";
 import {CommandListener} from "./listener/CommandListener";
 import {DataHandler} from "./utils/DataHandler";
+require('dotenv').config();
 
 export class DiscordBot {
-    public static SERVER_ID :Snowflake = '716839607743807549';
-    public static COMMAND_PREFIX :string = '!';
-    public static MAIN_CATEGORY :string = '765172656148054027';
-    public static ARCHIVE_CATEGORY :string = '765172698677772309';
-    public static COMMANDS_CHANNEL :string = '765194838114041856';
+    public static SERVER_ID :Snowflake = process.env.SERVER_ID;
+    public static COMMAND_PREFIX :string = process.env.COMMAND_PREFIX;
+    public static MAIN_CATEGORY :string = process.env.MAIN_CATEGORY;
+    public static ARCHIVE_CATEGORY :string = process.env.ARCHIVE_CATEGORY;
+    public static COMMANDS_CHANNEL :string = process.env.COMMANDS_CHANNEL;
 
     private static client :Client;
-    private static TOKEN :string = 'NjM2MjE4ODI4MDkwNjM4MzM2.Xa8a9A.JV1rkJO5v9O0hFEemrMCy3kMwnc';
+    private static TOKEN :string = process.env.TOKEN;
     private static commandHandler :CommandHandler;
 
     static main() :void {
