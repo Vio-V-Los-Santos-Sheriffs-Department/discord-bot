@@ -8,6 +8,7 @@ export class DiscordBot {
     public static COMMAND_PREFIX :string = '!';
     public static MAIN_CATEGORY :string = '765172656148054027';
     public static ARCHIVE_CATEGORY :string = '765172698677772309';
+    public static COMMANDS_CHANNEL :string = '765194838114041856';
 
     private static client :Client;
     private static TOKEN :string = 'NjM2MjE4ODI4MDkwNjM4MzM2.Xa8a9A.JV1rkJO5v9O0hFEemrMCy3kMwnc';

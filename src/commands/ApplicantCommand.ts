@@ -26,27 +26,43 @@ export class ApplicantCommand implements ICommand {
     invoke: string = "applicant";
 
     performCommand(member: GuildMember, textChannel: TextChannel, command: string, args: string[]): boolean {
+        if(textChannel.id !== DiscordBot.COMMANDS_CHANNEL) return true;
         if(args.length > 0) {
             switch (args[0]) {
+
                 case "add": // füge einen neuen Bewerber hinzu
-                    if(args.length === 2) {
-                        this.addApplicant(args[1]);
+                    if(args.length === 3) {
+                        if(this.isValidUrl(args[2])) {
+                            this.addApplicant(args[1], args[2]);
+                        } else {
+                            textChannel.send("Das zweite Argument muss ein gültiger Link sein!").then(msg => {
+                                msg.delete({timeout: 1000});
+                            });
+                        }
                     } else {
-                        textChannel.send("!applicant add <NAME>");
+                        textChannel.send("!applicant add <NAME> <URL>").then(msg => {
+                            msg.delete({timeout: 1000});
+                        });
                     }
                     break;
+
                 case "remove": // entferne einen Bewerber entgültig
                     if(args.length === 2) {
                         this.removeApplicant(args[1]);
                     } else {
-                        textChannel.send("!applicant remove <NAME>");
+                        textChannel.send("!applicant remove <NAME>").then(msg => {
+                            msg.delete({timeout: 1000});
+                        });
                     }
                     break;
+
                 case "archive": // archivire die Diskusssionschannel und den Abstimmungsstatus
                     if(args.length === 2) {
                         this.archiveApplicant(args[1]);
                     } else {
-                        textChannel.send("!applicant remove <NAME>");
+                        textChannel.send("!applicant archive <NAME>").then(msg => {
+                            msg.delete({timeout: 1000});
+                        });
                     }
                     break;
             }
@@ -69,7 +85,7 @@ export class ApplicantCommand implements ICommand {
         const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
         if(DataHandler.data.hasOwnProperty(name)) {
-            const {channelId, messageId} = DataHandler.data[name];
+            const {channelId, messageId, url} = DataHandler.data[name];
             const channel :GuildChannel = await guild.channels.resolve(channelId);
             await channel.setParent(DiscordBot.ARCHIVE_CATEGORY);
             if(channel instanceof TextChannel) {
@@ -79,17 +95,19 @@ export class ApplicantCommand implements ICommand {
                 const negative = await msg.react("🔴");
 
                 const embed = new MessageEmbed()
-                    .setColor('#0099ff')
+                    .setColor('#d9aa00')
                     .setTitle(`Bewerbung von ${name}`)
+                    .setAuthor("Los Santos County Sheriffs Department","https://app.police-academy.de/media/favicons/android-icon-192x192.png", url)
                     .addFields(
-                    {name: 'Annehmen', value: (positive.count - 1)},
-                        {name: 'Gespräch', value: (interview.count - 1)},
-                        {name: 'Ablehnen', value: (negative.count - 1)}
+                    {name: 'Annehmen', value: (positive.count - 1), inline: true},
+                        {name: 'Gespräch', value: (interview.count - 1), inline: true},
+                        {name: 'Ablehnen', value: (negative.count - 1), inline: true}
                     )
                     .setTimestamp(Date.now())
-                    .setFooter('Los Santos County Sheriffs Department');
+                    .setFooter('Los Santos County Sheriffs Department', "https://app.police-academy.de/media/favicons/android-icon-192x192.png");
 
-                channel.send(embed);
+                const answer = await channel.send(embed);
+                answer.pin();
                 msg.reactions.removeAll();
             }
 
@@ -98,7 +116,7 @@ export class ApplicantCommand implements ICommand {
         }
     }
 
-    private async addApplicant(name :string) {
+    private async addApplicant(name :string, post :string) {
 
         const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
@@ -106,7 +124,10 @@ export class ApplicantCommand implements ICommand {
 
         let msg :Message
         const channel :TextChannel = await guild.channels.create(name, {type: "text"});
-        msg = await channel.send("@everyone Abstimmung!");
+        await channel.setTopic(post);
+        msg = await channel.send(`@everyone Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
+
+        await msg.pin();
         msg.react("🟢");
         msg.react("🔵");
         msg.react("🔴");
@@ -116,9 +137,20 @@ export class ApplicantCommand implements ICommand {
         DataHandler.data[name] = {
             name,
             channelId: channel.id,
-            messageId: msg.id
+            messageId: msg.id,
+            url: post
         };
         DataHandler.saveToFile();
+    }
+
+    private isValidUrl(string) :boolean {
+        try {
+            new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return true;
     }
 
 }

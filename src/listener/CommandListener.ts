@@ -10,14 +10,16 @@ export class CommandListener {
 
     private static onCommand(msg :Message) :void {
         const {content, member, channel} = msg;
+        if(msg.author.bot) return;
         if(content.indexOf(DiscordBot.COMMAND_PREFIX, 0) === 0) {
             if(channel instanceof TextChannel) {
-                if(!DiscordBot.getCommandHandler().perform(member, channel, content.substr(1))) {
-
-                }
+                DiscordBot.getCommandHandler().perform(member, channel, content.substr(1))
             } else {
-
+                channel.send(`Unknown command!`).then(msg => {
+                    msg.delete({timeout: 1000});
+                });
             }
+            msg.delete({timeout: 10});
         }
     }
 }
