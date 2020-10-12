@@ -1,0 +1,25 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "Discordbot für Bewerbungen",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vio-V-Los-Santos-Sheriffs-Department/discord-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vio-V-Los-Santos-Sheriffs-Department/discord-bot/issues"
+  },
+  "homepage": "https://github.com/Vio-V-Los-Santos-Sheriffs-Department/discord-bot#readme",
+  "dependencies": {
+    "@types/node": "^14.11.8",
+    "discord.js": "^12.3.1",
+    "uuid": "^8.3.1"
+  }
+}
