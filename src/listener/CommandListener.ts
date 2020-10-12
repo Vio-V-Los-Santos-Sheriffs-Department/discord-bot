@@ -16,10 +16,10 @@ export class CommandListener {
                 DiscordBot.getCommandHandler().perform(member, channel, content.substr(1))
             } else {
                 channel.send(`Unknown command!`).then(msg => {
-                    msg.delete({timeout: 1000});
+                    msg.delete({timeout: 15000});
                 });
             }
-            msg.delete({timeout: 10});
+            msg.delete({timeout: 15000});
         }
     }
 }
