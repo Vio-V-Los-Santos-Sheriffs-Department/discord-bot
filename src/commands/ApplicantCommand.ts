@@ -48,10 +48,12 @@ export class ApplicantCommand implements ICommand {
                     break;
                 case "remove": // entferne einen Bewerber entgültig
                     if(args.length === 2) {
-                        if(!DataHandler.data.hasOwnProperty(args[1]))
+                        if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
                                 msg.delete({timeout: 15000});
                             });
+                            return;
+                        }
 
                         this.removeApplicant(args[1]);
                         textChannel.send("Der Bewerber wurde erfolgreich gelöscht!").then(msg => {
@@ -65,10 +67,12 @@ export class ApplicantCommand implements ICommand {
                     break;
                 case "archive": // archivire die Diskusssionschannel und den Abstimmungsstatus
                     if(args.length === 2) {
-                        if(!DataHandler.data.hasOwnProperty(args[1]))
+                        if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
                                 msg.delete({timeout: 15000});
                             });
+                            return;
+                        }
 
                         this.archiveApplicant(args[1]);
                         textChannel.send("Der Bewerber wurde erfolgreich archiviert!").then(msg => {
@@ -82,10 +86,12 @@ export class ApplicantCommand implements ICommand {
                     break;
                 case "stopPoll": // archivire die Diskusssionschannel und den Abstimmungsstatus
                     if(args.length === 2) {
-                        if(!DataHandler.data.hasOwnProperty(args[1]))
+                        if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
                                 msg.delete({timeout: 15000});
                             });
+                            return;
+                        }
 
                         this.stopPoll(args[1]);
                         textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!").then(msg => {
