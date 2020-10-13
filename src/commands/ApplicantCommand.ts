@@ -11,6 +11,7 @@ import {
 } from "discord.js";
 import {DataHandler} from "../utils/DataHandler";
 import {DiscordBot} from "../index";
+import {promises} from "dns";
 
 export class ApplicantCommand implements ICommand {
 
@@ -27,7 +28,6 @@ export class ApplicantCommand implements ICommand {
         if(textChannel.id !== DiscordBot.COMMANDS_CHANNEL) return true;
         if(args.length > 0) {
             switch (args[0]) {
-
                 case "add": // füge einen neuen Bewerber hinzu
                     if(args.length === 3) {
                         if(this.isValidUrl(args[2])) {
@@ -46,7 +46,6 @@ export class ApplicantCommand implements ICommand {
                         });
                     }
                     break;
-
                 case "remove": // entferne einen Bewerber entgültig
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1]))
@@ -64,7 +63,6 @@ export class ApplicantCommand implements ICommand {
                         });
                     }
                     break;
-
                 case "archive": // archivire die Diskusssionschannel und den Abstimmungsstatus
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1]))
@@ -82,12 +80,29 @@ export class ApplicantCommand implements ICommand {
                         });
                     }
                     break;
+                case "stopPoll": // archivire die Diskusssionschannel und den Abstimmungsstatus
+                    if(args.length === 2) {
+                        if(!DataHandler.data.hasOwnProperty(args[1]))
+                            textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
+                                msg.delete({timeout: 15000});
+                            });
+
+                        this.stopPoll(args[1]);
+                        textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!").then(msg => {
+                            msg.delete({timeout: 15000});
+                        });
+                    } else {
+                        textChannel.send("!applicant stopPoll <NAME>").then(msg => {
+                            msg.delete({timeout: 15000});
+                        });
+                    }
+                    break;
             }
         }
         return true;
     }
 
-    private async removeApplicant(name :string) {
+    private async removeApplicant(name :string) :Promise<void> {
         const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
         if(DataHandler.data.hasOwnProperty(name)) {
@@ -98,13 +113,51 @@ export class ApplicantCommand implements ICommand {
         }
     }
 
-    private async archiveApplicant(name :string) {
+    private async archiveApplicant(name :string) :Promise<void> {
         const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
         if(DataHandler.data.hasOwnProperty(name)) {
             const {channelId, messageId, url} = DataHandler.data[name];
             const channel :GuildChannel = await guild.channels.resolve(channelId);
             await channel.setParent(DiscordBot.ARCHIVE_CATEGORY);
+            if(channel instanceof TextChannel) {
+                if(DataHandler.data[name].poll) {
+                    const msg = await channel.messages.fetch(messageId);
+                    const positive = await msg.react("🟢");
+                    const interview = await msg.react("🔵");
+                    const negative = await msg.react("🔴");
+
+                    const embed = new MessageEmbed()
+                        .setColor('#d9aa00')
+                        .setTitle(`Bewerbung von ${name}`)
+                        .setAuthor("Los Santos County Sheriffs Department","https://app.police-academy.de/media/favicons/android-icon-192x192.png", url)
+                        .addFields(
+                            {name: 'Annehmen', value: (positive.count - 1), inline: true},
+                            {name: 'Gespräch', value: (interview.count - 1), inline: true},
+                            {name: 'Ablehnen', value: (negative.count - 1), inline: true}
+                        )
+                        .setTimestamp(Date.now())
+                        .setFooter('Los Santos County Sheriffs Department', "https://app.police-academy.de/media/favicons/android-icon-192x192.png");
+
+                    const answer = await channel.send(embed);
+                    answer.pin();
+                    msg.reactions.removeAll();
+                }
+            }
+
+            delete DataHandler.data[name];
+            DataHandler.saveToFile();
+        }
+    }
+
+    private async stopPoll(name :string) :Promise<void> {
+        if(!DataHandler.data[name].poll) return;
+
+        const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
+
+        if(DataHandler.data.hasOwnProperty(name)) {
+            const {channelId, messageId, url} = DataHandler.data[name];
+            const channel :GuildChannel = await guild.channels.resolve(channelId);
             if(channel instanceof TextChannel) {
                 const msg = await channel.messages.fetch(messageId);
                 const positive = await msg.react("🟢");
@@ -116,7 +169,7 @@ export class ApplicantCommand implements ICommand {
                     .setTitle(`Bewerbung von ${name}`)
                     .setAuthor("Los Santos County Sheriffs Department","https://app.police-academy.de/media/favicons/android-icon-192x192.png", url)
                     .addFields(
-                    {name: 'Annehmen', value: (positive.count - 1), inline: true},
+                        {name: 'Annehmen', value: (positive.count - 1), inline: true},
                         {name: 'Gespräch', value: (interview.count - 1), inline: true},
                         {name: 'Ablehnen', value: (negative.count - 1), inline: true}
                     )
@@ -128,20 +181,19 @@ export class ApplicantCommand implements ICommand {
                 msg.reactions.removeAll();
             }
 
-            delete DataHandler.data[name];
+            DataHandler.data[name].poll = false;
             DataHandler.saveToFile();
         }
     }
 
-    private async addApplicant(name :string, post :string) {
+    private async addApplicant(name :string, post :string) :Promise<void> {
 
         const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
         await this.removeApplicant(name);
 
         let msg :Message
-        const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY});
-        await channel.setTopic(post);
+        const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumsbeitrag: ${post}`});
         msg = await channel.send(`@everyone Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
 
         await msg.pin();
@@ -153,7 +205,8 @@ export class ApplicantCommand implements ICommand {
             name,
             channelId: channel.id,
             messageId: msg.id,
-            url: post
+            url: post,
+            poll: true
         };
         DataHandler.saveToFile();
     }
