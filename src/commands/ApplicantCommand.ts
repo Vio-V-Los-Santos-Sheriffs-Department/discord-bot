@@ -1,5 +1,6 @@
 import {ICommand} from "./type/ICommand";
 import {
+    CategoryChannel,
     Client,
     Guild,
     GuildChannel,
@@ -139,7 +140,7 @@ export class ApplicantCommand implements ICommand {
         await this.removeApplicant(name);
 
         let msg :Message
-        const channel :TextChannel = await guild.channels.create(name, {type: "text"});
+        const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY});
         await channel.setTopic(post);
         msg = await channel.send(`@everyone Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
 
@@ -147,8 +148,6 @@ export class ApplicantCommand implements ICommand {
         msg.react("🟢");
         msg.react("🔵");
         msg.react("🔴");
-
-        await guild.channels.resolve(channel.id).setParent(DiscordBot.MAIN_CATEGORY);
 
         DataHandler.data[name] = {
             name,
