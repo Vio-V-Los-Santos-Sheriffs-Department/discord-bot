@@ -1,6 +1,5 @@
 import {ICommand} from "./type/ICommand";
 import {
-    CategoryChannel,
     Client,
     Guild,
     GuildChannel,
@@ -11,7 +10,6 @@ import {
 } from "discord.js";
 import {DataHandler} from "../utils/DataHandler";
 import {DiscordBot} from "../index";
-import {promises} from "dns";
 
 export class ApplicantCommand implements ICommand {
 

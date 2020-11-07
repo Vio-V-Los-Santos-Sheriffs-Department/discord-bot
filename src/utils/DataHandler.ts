@@ -16,6 +16,7 @@ export class DataHandler {
         try {
             const string :string = fs.readFileSync("./data/data.json", "utf-8");
             this.data = JSON.parse(string);
+            console.log(this.data);
         } catch (_) {
             console.log("data.json file does not exist!");
         }
