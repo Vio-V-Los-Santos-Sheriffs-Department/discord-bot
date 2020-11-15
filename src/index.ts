@@ -2,6 +2,7 @@ import { Client, Snowflake } from 'discord.js';
 import {CommandHandler} from "./utils/CommandHandler";
 import {CommandListener} from "./listener/CommandListener";
 import {DataHandler} from "./utils/DataHandler";
+import {strict} from "assert";
 require('dotenv').config();
 
 export class DiscordBot {
@@ -13,6 +14,21 @@ export class DiscordBot {
     public static FACTION_NAME :string = process.env.FACTION_NAME;
     public static FACTION_ICON :string = process.env.FACTION_ICON;
     public static EMBED_COLOR :string = process.env.EMBED_COLOR;
+    public static MENTION_CALLED :string = process.env.MENTION_CALLED;
+    public static ANSWERS :object = {
+        1: {
+            name: process.env.ANSWER_1_NAME,
+            reaction: process.env.ANSWER_1_REACTION
+        },
+        2: {
+            name: process.env.ANSWER_2_NAME,
+            reaction: process.env.ANSWER_2_REACTION
+        },
+        3: {
+            name: process.env.ANSWER_3_NAME,
+            reaction: process.env.ANSWER_3_REACTION
+        }
+    };
 
     private static client :Client;
     private static TOKEN :string = process.env.TOKEN;

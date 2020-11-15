@@ -121,33 +121,11 @@ export class ApplicantCommand implements ICommand {
         const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
         if(DataHandler.data.hasOwnProperty(name)) {
-            const {channelId, messageId, url} = DataHandler.data[name];
+            const {channelId} = DataHandler.data[name];
             const channel :GuildChannel = await guild.channels.resolve(channelId);
             await channel.setParent(DiscordBot.ARCHIVE_CATEGORY);
-            if(channel instanceof TextChannel) {
-                if(DataHandler.data[name].poll) {
-                    const msg = await channel.messages.fetch(messageId);
-                    const positive = await msg.react("🟢");
-                    const interview = await msg.react("🔵");
-                    const negative = await msg.react("🔴");
 
-                    const embed = new MessageEmbed()
-                        .setColor(DiscordBot.EMBED_COLOR)
-                        .setTitle(`Bewerbung von ${name}`)
-                        .setAuthor(DiscordBot.FACTION_NAME,DiscordBot.FACTION_ICON, url)
-                        .addFields(
-                            {name: 'Annehmen', value: (positive.count - 1), inline: true},
-                            {name: 'Gespräch', value: (interview.count - 1), inline: true},
-                            {name: 'Ablehnen', value: (negative.count - 1), inline: true}
-                        )
-                        .setTimestamp(Date.now())
-                        .setFooter(DiscordBot.FACTION_NAME, DiscordBot.FACTION_ICON);
-
-                    const answer = await channel.send(embed);
-                    answer.pin();
-                    msg.reactions.removeAll();
-                }
-            }
+            await this.stopPoll(name);
 
             delete DataHandler.data[name];
             DataHandler.saveToFile();
@@ -164,18 +142,18 @@ export class ApplicantCommand implements ICommand {
             const channel :GuildChannel = await guild.channels.resolve(channelId);
             if(channel instanceof TextChannel) {
                 const msg = await channel.messages.fetch(messageId);
-                const positive = await msg.react("🟢");
-                const interview = await msg.react("🔵");
-                const negative = await msg.react("🔴");
+                const positive = await msg.react(DiscordBot.ANSWERS[1]['reaction']);
+                const interview = await msg.react(DiscordBot.ANSWERS[2]['reaction']);
+                const negative = await msg.react(DiscordBot.ANSWERS[3]['reaction']);
 
                 const embed = new MessageEmbed()
                     .setColor(DiscordBot.EMBED_COLOR)
                     .setTitle(`Bewerbung von ${name}`)
                     .setAuthor(DiscordBot.FACTION_NAME,DiscordBot.FACTION_ICON, url)
                     .addFields(
-                        {name: 'Annehmen', value: (positive.count - 1), inline: true},
-                        {name: 'Gespräch', value: (interview.count - 1), inline: true},
-                        {name: 'Ablehnen', value: (negative.count - 1), inline: true}
+                        {name: DiscordBot.ANSWERS[1]['name'], value: (positive.count - 1), inline: true},
+                        {name: DiscordBot.ANSWERS[2]['name'], value: (interview.count - 1), inline: true},
+                        {name: DiscordBot.ANSWERS[3]['name'], value: (negative.count - 1), inline: true}
                     )
                     .setTimestamp(Date.now())
                     .setFooter(DiscordBot.FACTION_NAME, DiscordBot.FACTION_ICON);
@@ -198,12 +176,12 @@ export class ApplicantCommand implements ICommand {
 
         let msg :Message
         const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumsbeitrag: ${post}`});
-        msg = await channel.send(`@everyone Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
+        msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
 
         await msg.pin();
-        msg.react("🟢");
-        msg.react("🔵");
-        msg.react("🔴");
+        msg.react(DiscordBot.ANSWERS[1]['reaction']);
+        msg.react(DiscordBot.ANSWERS[2]['reaction']);
+        msg.react(DiscordBot.ANSWERS[3]['reaction']);
 
         DataHandler.data[name] = {
             name,
