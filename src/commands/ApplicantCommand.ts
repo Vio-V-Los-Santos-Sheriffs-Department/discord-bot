@@ -194,12 +194,7 @@ export class ApplicantCommand implements ICommand {
     }
 
     private isValidUrl(string) :boolean {
-        try {
-            new URL(string);
-        } catch (_) {
-            return false;
-        }
-
+        // TODO crash report
         return true;
     }
 
