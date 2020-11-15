@@ -10,6 +10,9 @@ export class DiscordBot {
     public static MAIN_CATEGORY :string = process.env.MAIN_CATEGORY;
     public static ARCHIVE_CATEGORY :string = process.env.ARCHIVE_CATEGORY;
     public static COMMANDS_CHANNEL :string = process.env.COMMANDS_CHANNEL;
+    public static FACTION_NAME :string = process.env.FACTION_NAME;
+    public static FACTION_ICON :string = process.env.FACTION_ICON;
+    public static EMBED_COLOR :string = process.env.EMBED_COLOR;
 
     private static client :Client;
     private static TOKEN :string = process.env.TOKEN;

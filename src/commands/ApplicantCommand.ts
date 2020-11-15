@@ -132,16 +132,16 @@ export class ApplicantCommand implements ICommand {
                     const negative = await msg.react("🔴");
 
                     const embed = new MessageEmbed()
-                        .setColor('#d9aa00')
+                        .setColor(DiscordBot.EMBED_COLOR)
                         .setTitle(`Bewerbung von ${name}`)
-                        .setAuthor("Los Santos County Sheriffs Department","https://app.police-academy.de/media/favicons/android-icon-192x192.png", url)
+                        .setAuthor(DiscordBot.FACTION_NAME,DiscordBot.FACTION_ICON, url)
                         .addFields(
                             {name: 'Annehmen', value: (positive.count - 1), inline: true},
                             {name: 'Gespräch', value: (interview.count - 1), inline: true},
                             {name: 'Ablehnen', value: (negative.count - 1), inline: true}
                         )
                         .setTimestamp(Date.now())
-                        .setFooter('Los Santos County Sheriffs Department', "https://app.police-academy.de/media/favicons/android-icon-192x192.png");
+                        .setFooter(DiscordBot.FACTION_NAME, DiscordBot.FACTION_ICON);
 
                     const answer = await channel.send(embed);
                     answer.pin();
@@ -169,16 +169,16 @@ export class ApplicantCommand implements ICommand {
                 const negative = await msg.react("🔴");
 
                 const embed = new MessageEmbed()
-                    .setColor('#d9aa00')
+                    .setColor(DiscordBot.EMBED_COLOR)
                     .setTitle(`Bewerbung von ${name}`)
-                    .setAuthor("Los Santos County Sheriffs Department","https://app.police-academy.de/media/favicons/android-icon-192x192.png", url)
+                    .setAuthor(DiscordBot.FACTION_NAME,DiscordBot.FACTION_ICON, url)
                     .addFields(
                         {name: 'Annehmen', value: (positive.count - 1), inline: true},
                         {name: 'Gespräch', value: (interview.count - 1), inline: true},
                         {name: 'Ablehnen', value: (negative.count - 1), inline: true}
                     )
                     .setTimestamp(Date.now())
-                    .setFooter('Los Santos County Sheriffs Department', "https://app.police-academy.de/media/favicons/android-icon-192x192.png");
+                    .setFooter(DiscordBot.FACTION_NAME, DiscordBot.FACTION_ICON);
 
                 const answer = await channel.send(embed);
                 answer.pin();
