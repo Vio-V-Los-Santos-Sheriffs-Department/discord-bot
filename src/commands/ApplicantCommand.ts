@@ -1,7 +1,6 @@
 import {ICommand} from "./type/ICommand";
 import {
     Client,
-    Guild,
     GuildChannel,
     GuildMember,
     Message,
@@ -14,7 +13,6 @@ import {DiscordBot} from "../index";
 export class ApplicantCommand implements ICommand {
 
     private client :Client;
-    private guild :Guild;
     constructor() {
         this.client = DiscordBot.getClient();
     }
@@ -30,75 +28,51 @@ export class ApplicantCommand implements ICommand {
                     if(args.length === 3) {
                         if(this.isValidUrl(args[2])) {
                             this.addApplicant(args[1], args[2]);
-                            textChannel.send("Der Bewerber wurde erfolgreich registriert!").then(msg => {
-                                msg.delete({timeout: 15000});
-                            });
+                            textChannel.send("Der Bewerber wurde erfolgreich registriert!");
                         } else {
-                            textChannel.send("Das zweite Argument muss ein gültiger Link sein!").then(msg => {
-                                msg.delete({timeout: 15000});
-                            });
+                            textChannel.send("Das zweite Argument muss ein gültiger Link sein!");
                         }
                     } else {
-                        textChannel.send("!applicant add <NAME> <URL>").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("!applicant add <NAME> <URL>");
                     }
                     break;
                 case "remove": // entferne einen Bewerber entgültig
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
-                            textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
-                                msg.delete({timeout: 15000});
-                            });
+                            textChannel.send("Der angegebene Spieler ist nicht registriert!");
                             return;
                         }
 
                         this.removeApplicant(args[1]);
-                        textChannel.send("Der Bewerber wurde erfolgreich gelöscht!").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("Der Bewerber wurde erfolgreich gelöscht!");
                     } else {
-                        textChannel.send("!applicant remove <NAME>").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("!applicant remove <NAME>");
                     }
                     break;
                 case "archive": // archivire die Diskusssionschannel und den Abstimmungsstatus
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
-                            textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
-                                msg.delete({timeout: 15000});
-                            });
+                            textChannel.send("Der angegebene Spieler ist nicht registriert!");
                             return;
                         }
 
                         this.archiveApplicant(args[1]);
-                        textChannel.send("Der Bewerber wurde erfolgreich archiviert!").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("Der Bewerber wurde erfolgreich archiviert!");
                     } else {
-                        textChannel.send("!applicant archive <NAME>").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("!applicant archive <NAME>");
                     }
                     break;
                 case "stopPoll": // archivire die Diskusssionschannel und den Abstimmungsstatus
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
-                            textChannel.send("Der angegebene Spieler ist nicht registriert!").then(msg => {
-                                msg.delete({timeout: 15000});
-                            });
+                            textChannel.send("Der angegebene Spieler ist nicht registriert!");
                             return;
                         }
 
                         this.stopPoll(args[1]);
-                        textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!");
                     } else {
-                        textChannel.send("!applicant stopPoll <NAME>").then(msg => {
-                            msg.delete({timeout: 15000});
-                        });
+                        textChannel.send("!applicant stopPoll <NAME>");
                     }
                     break;
             }

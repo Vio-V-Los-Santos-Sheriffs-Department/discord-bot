@@ -1,6 +1,8 @@
-import {DiscordBot} from "../index";
 import {ICommand} from "../commands/type/ICommand";
-import {GuildMember, TextChannel} from "discord.js";
+import {
+    GuildMember,
+    TextChannel
+} from "discord.js";
 import {ApplicantCommand} from "../commands/ApplicantCommand";
 
 export class CommandHandler {
@@ -22,9 +24,7 @@ export class CommandHandler {
         const [command, ...args] = message.split(" ");
         if(this.commands.has(command.toUpperCase())) {
             const cmdObject = this.commands.get(command.toUpperCase());
-            if(!cmdObject.performCommand(member, textChannel, command, args)) {
-
-            }
+            cmdObject.performCommand(member, textChannel, command, args);
             return true;
         }
         return false;

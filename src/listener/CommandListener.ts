@@ -1,5 +1,9 @@
 import {DiscordBot} from "../index";
-import {Client, Message, TextChannel} from "discord.js";
+import {
+    Client,
+    Message,
+    TextChannel
+} from "discord.js";
 
 export class CommandListener {
     private static client :Client;
@@ -14,12 +18,7 @@ export class CommandListener {
         if(content.indexOf(DiscordBot.COMMAND_PREFIX, 0) === 0) {
             if(channel instanceof TextChannel) {
                 DiscordBot.getCommandHandler().perform(member, channel, content.substr(1))
-            } else {
-                channel.send(`Unknown command!`).then(msg => {
-                    msg.delete({timeout: 15000});
-                });
             }
-            msg.delete({timeout: 15000});
         }
     }
 }
