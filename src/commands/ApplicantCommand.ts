@@ -146,6 +146,8 @@ export class ApplicantCommand implements ICommand {
                 const interview = await msg.react(DiscordBot.ANSWERS[2]['reaction']);
                 const negative = await msg.react(DiscordBot.ANSWERS[3]['reaction']);
 
+                console.log(name, msg.id, positive.count, interview.count, negative.count);
+
                 const embed = new MessageEmbed()
                     .setColor(DiscordBot.EMBED_COLOR)
                     .setTitle(`Bewerbung von ${name}`)
