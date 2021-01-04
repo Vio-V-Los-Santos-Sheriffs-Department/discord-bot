@@ -4,7 +4,7 @@
   "description": "Discordbot für Bewerbungen",
   "main": "index.js",
   "scripts": {
-    "init": "tsc",
+    "prestart": "tsc",
     "start": "node dist/index.js"
   },
   "repository": {
