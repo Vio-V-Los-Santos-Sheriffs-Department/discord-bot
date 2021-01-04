@@ -2,7 +2,7 @@ import { Client, Snowflake } from 'discord.js';
 import {CommandHandler} from "./utils/CommandHandler";
 import {CommandListener} from "./listener/CommandListener";
 import {DataHandler} from "./utils/DataHandler";
-import {strict} from "assert";
+import {Logger} from "./utils/Logger";
 require('dotenv').config();
 
 export class DiscordBot {
@@ -41,6 +41,7 @@ export class DiscordBot {
         this.client.login(this.TOKEN);
         this.commandHandler = new CommandHandler();
         this.registerEvents();
+        Logger.log("INFO", "BotStarted");
     }
 
     static registerEvents() :void {

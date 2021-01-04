@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import {DataHandler} from "../utils/DataHandler";
 import {DiscordBot} from "../index";
+import {Logger} from "../utils/Logger";
 
 export class ApplicantCommand implements ICommand {
 
@@ -29,8 +30,18 @@ export class ApplicantCommand implements ICommand {
                         if(this.isValidUrl(args[2])) {
                             this.addApplicant(args[1], args[2]);
                             textChannel.send("Der Bewerber wurde erfolgreich registriert!");
+                            Logger.log("INFO","CreatedApplication", {
+                                "Sender": member.nickname,
+                                "ApplicantName": args[1],
+                                "ApplicantForumThread": args[2],
+                            });
                         } else {
                             textChannel.send("Das zweite Argument muss ein gültiger Link sein!");
+                            Logger.log("ERROR", "CreatedApplication", {
+                                "Sender": member.nickname,
+                                "Error": "Invalid Link",
+                                "Input": args[2],
+                            });
                         }
                     } else {
                         textChannel.send("!applicant add <NAME> <URL>");
@@ -40,11 +51,20 @@ export class ApplicantCommand implements ICommand {
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!");
+                            Logger.log("ERROR", "RemoveApplication", {
+                                "Sender": member.nickname,
+                                "Error": "Invalid Name",
+                                "Input": args[1],
+                            });
                             return;
                         }
 
                         this.removeApplicant(args[1]);
                         textChannel.send("Der Bewerber wurde erfolgreich gelöscht!");
+                        Logger.log("INFO", "RemoveApplication", {
+                            "Sender": member.nickname,
+                            "ApplicantName": args[1],
+                        });
                     } else {
                         textChannel.send("!applicant remove <NAME>");
                     }
@@ -53,11 +73,20 @@ export class ApplicantCommand implements ICommand {
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!");
+                            Logger.log("ERROR", "ArchiveApplication", {
+                                "Sender": member.nickname,
+                                "Error": "Invalid Name",
+                                "Input": args[1],
+                            });
                             return;
                         }
 
                         this.archiveApplicant(args[1]);
                         textChannel.send("Der Bewerber wurde erfolgreich archiviert!");
+                        Logger.log("INFO", "ArchiveApplication", {
+                            "Sender": member.nickname,
+                            "ApplicantName": args[1],
+                        });
                     } else {
                         textChannel.send("!applicant archive <NAME>");
                     }
@@ -66,11 +95,20 @@ export class ApplicantCommand implements ICommand {
                     if(args.length === 2) {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!");
+                            Logger.log("ERROR", "StopApplicationPoll", {
+                                "Sender": member.nickname,
+                                "Error": "Invalid Name",
+                                "Input": args[1],
+                            });
                             return;
                         }
 
                         this.stopPoll(args[1]);
                         textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!");
+                        Logger.log("INFO", "StopApplicationPoll", {
+                            "Sender": member.nickname,
+                            "ApplicantName": args[1],
+                        });
                     } else {
                         textChannel.send("!applicant stopPoll <NAME>");
                     }
