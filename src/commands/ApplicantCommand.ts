@@ -31,14 +31,14 @@ export class ApplicantCommand implements ICommand {
                             this.addApplicant(args[1], args[2]);
                             textChannel.send("Der Bewerber wurde erfolgreich registriert!");
                             Logger.log("INFO","CreatedApplication", {
-                                "Sender": member.nickname,
+                                "Sender": member.displayName,
                                 "ApplicantName": args[1],
                                 "ApplicantForumThread": args[2],
                             });
                         } else {
                             textChannel.send("Das zweite Argument muss ein gültiger Link sein!");
                             Logger.log("ERROR", "CreatedApplication", {
-                                "Sender": member.nickname,
+                                "Sender": member.displayName,
                                 "Error": "Invalid Link",
                                 "Input": args[2],
                             });
@@ -52,7 +52,7 @@ export class ApplicantCommand implements ICommand {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!");
                             Logger.log("ERROR", "RemoveApplication", {
-                                "Sender": member.nickname,
+                                "Sender": member.displayName,
                                 "Error": "Invalid Name",
                                 "Input": args[1],
                             });
@@ -62,7 +62,7 @@ export class ApplicantCommand implements ICommand {
                         this.removeApplicant(args[1]);
                         textChannel.send("Der Bewerber wurde erfolgreich gelöscht!");
                         Logger.log("INFO", "RemoveApplication", {
-                            "Sender": member.nickname,
+                            "Sender": member.displayName,
                             "ApplicantName": args[1],
                         });
                     } else {
@@ -74,7 +74,7 @@ export class ApplicantCommand implements ICommand {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!");
                             Logger.log("ERROR", "ArchiveApplication", {
-                                "Sender": member.nickname,
+                                "Sender": member.displayName,
                                 "Error": "Invalid Name",
                                 "Input": args[1],
                             });
@@ -84,7 +84,7 @@ export class ApplicantCommand implements ICommand {
                         this.archiveApplicant(args[1]);
                         textChannel.send("Der Bewerber wurde erfolgreich archiviert!");
                         Logger.log("INFO", "ArchiveApplication", {
-                            "Sender": member.nickname,
+                            "Sender": member.displayName,
                             "ApplicantName": args[1],
                         });
                     } else {
@@ -96,7 +96,7 @@ export class ApplicantCommand implements ICommand {
                         if(!DataHandler.data.hasOwnProperty(args[1])) {
                             textChannel.send("Der angegebene Spieler ist nicht registriert!");
                             Logger.log("ERROR", "StopApplicationPoll", {
-                                "Sender": member.nickname,
+                                "Sender": member.displayName,
                                 "Error": "Invalid Name",
                                 "Input": args[1],
                             });
@@ -106,7 +106,7 @@ export class ApplicantCommand implements ICommand {
                         this.stopPoll(args[1]);
                         textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!");
                         Logger.log("INFO", "StopApplicationPoll", {
-                            "Sender": member.nickname,
+                            "Sender": member.displayName,
                             "ApplicantName": args[1],
                         });
                     } else {
