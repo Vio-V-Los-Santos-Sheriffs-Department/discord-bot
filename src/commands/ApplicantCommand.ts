@@ -62,6 +62,7 @@ export class ApplicantCommand implements ICommand {
                                     "Error": "Invalid Duration",
                                     "Input": args[3],
                                 });
+                                return;
                             }
                             this.addApplicant(args[1], args[2], guild, Number(args[3]));
                             textChannel.send("Der Bewerber wurde erfolgreich registriert!");
