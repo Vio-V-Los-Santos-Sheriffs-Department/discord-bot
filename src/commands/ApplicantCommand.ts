@@ -34,6 +34,7 @@ export class ApplicantCommand implements ICommand {
                             textChannel.send("Der Bewerber wurde erfolgreich registriert!");
                             Logger.log("INFO","CreatedApplication", {
                                 "Sender": member.displayName,
+                                "ApplicantType": "Membership",
                                 "ApplicantName": args[1],
                                 "ApplicantForumThread": args[2],
                             });
@@ -41,12 +42,47 @@ export class ApplicantCommand implements ICommand {
                             textChannel.send("Das zweite Argument muss ein gültiger Link sein!");
                             Logger.log("ERROR", "CreatedApplication", {
                                 "Sender": member.displayName,
+                                "ApplicantType": "Membership",
                                 "Error": "Invalid Link",
                                 "Input": args[2],
                             });
                         }
                     } else {
                         textChannel.send("!applicant add <NAME> <URL>");
+                    }
+                    break;
+                case "padd": // füge einen neuen praktikant Bewerber hinzu
+                    if(args.length === 4) {
+                        if(this.isValidUrl(args[2])) {
+                            if (isNaN(Number(args[3]))) {
+                                textChannel.send("Die Dauer muss eine Zahl sein!");
+                                Logger.log("ERROR", "CreatedApplication", {
+                                    "Sender": member.displayName,
+                                    "ApplicantType": "Praktikum",
+                                    "Error": "Invalid Duration",
+                                    "Input": args[3],
+                                });
+                            }
+                            this.addApplicant(args[1], args[2], guild, Number(args[3]));
+                            textChannel.send("Der Bewerber wurde erfolgreich registriert!");
+                            Logger.log("INFO","CreatedApplication", {
+                                "Sender": member.displayName,
+                                "ApplicantType": "Praktikum",
+                                "ApplicantName": args[1],
+                                "ApplicantForumThread": args[2],
+                                "ApplicantDuration": args[3],
+                            });
+                        } else {
+                            textChannel.send("Das zweite Argument muss ein gültiger Link sein!");
+                            Logger.log("ERROR", "CreatedApplication", {
+                                "Sender": member.displayName,
+                                "ApplicantType": "Praktikum",
+                                "Error": "Invalid Link",
+                                "Input": args[2],
+                            });
+                        }
+                    } else {
+                        textChannel.send("!applicant add <NAME> <URL> <Dauer>");
                     }
                     break;
                 case "remove": // entferne einen Bewerber entgültig
@@ -179,13 +215,18 @@ export class ApplicantCommand implements ICommand {
         }
     }
 
-    private async addApplicant(name :string, post :string, guild: Guild) :Promise<void> {
+    private async addApplicant(name :string, post :string, guild: Guild, duration?: number) :Promise<void> {
 
         await this.removeApplicant(name, guild);
 
         let msg :Message
         const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumsbeitrag: ${post}`});
-        msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
+
+        if (duration) {
+            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post} \r Praktikumsdauer: ${duration} Tage`);
+        } else {
+            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
+        }
 
         await msg.pin();
         msg.react(DiscordBot.ANSWERS[1]['reaction']);
