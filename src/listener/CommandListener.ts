@@ -17,7 +17,8 @@ export class CommandListener {
         if(msg.author.bot) return;
         if(content.indexOf(DiscordBot.COMMAND_PREFIX, 0) === 0) {
             if(channel instanceof TextChannel) {
-                DiscordBot.getCommandHandler().perform(member, channel, content.substr(1))
+                DiscordBot.getCommandHandler().perform(member, channel, content.substr(1));
+                msg.delete();
             }
         }
     }
