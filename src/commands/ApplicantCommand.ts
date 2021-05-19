@@ -54,17 +54,7 @@ export class ApplicantCommand implements ICommand {
                 case "padd": // füge einen neuen praktikant Bewerber hinzu
                     if(args.length === 4) {
                         if(this.isValidUrl(args[2])) {
-                            if (isNaN(Number(args[3]))) {
-                                textChannel.send("Die Dauer muss eine Zahl sein!");
-                                Logger.log("ERROR", "CreatedApplication", {
-                                    "Sender": member.displayName,
-                                    "ApplicantType": "Praktikum",
-                                    "Error": "Invalid Duration",
-                                    "Input": args[3],
-                                });
-                                return;
-                            }
-                            this.addApplicant(args[1], args[2], guild, Number(args[3]));
+                            this.addApplicant(args[1], args[2], guild, args[3]);
                             textChannel.send("Der Bewerber wurde erfolgreich registriert!");
                             Logger.log("INFO","CreatedApplication", {
                                 "Sender": member.displayName,
@@ -216,7 +206,7 @@ export class ApplicantCommand implements ICommand {
         }
     }
 
-    private async addApplicant(name :string, post :string, guild: Guild, duration?: number) :Promise<void> {
+    private async addApplicant(name :string, post :string, guild: Guild, duration?: string) :Promise<void> {
 
         await this.removeApplicant(name, guild);
 
@@ -224,7 +214,7 @@ export class ApplicantCommand implements ICommand {
         const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumsbeitrag: ${post}`});
 
         if (duration) {
-            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post} \r Praktikumsdauer: ${duration} Tage`);
+            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post} \r Praktikumsdauer: ${duration}`);
         } else {
             msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
         }
