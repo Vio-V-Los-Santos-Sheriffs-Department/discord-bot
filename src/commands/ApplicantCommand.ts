@@ -1,6 +1,6 @@
 import {ICommand} from "./type/ICommand";
 import {
-    Client,
+    Client, Guild,
     GuildChannel,
     GuildMember,
     Message,
@@ -22,13 +22,15 @@ export class ApplicantCommand implements ICommand {
     invoke: string = "applicant";
 
     performCommand(member: GuildMember, textChannel: TextChannel, command: string, args: string[]): boolean {
+        const guild = member.guild;
+
         if(textChannel.id !== DiscordBot.COMMANDS_CHANNEL) return true;
         if(args.length > 0) {
             switch (args[0]) {
                 case "add": // füge einen neuen Bewerber hinzu
                     if(args.length === 3) {
                         if(this.isValidUrl(args[2])) {
-                            this.addApplicant(args[1], args[2]);
+                            this.addApplicant(args[1], args[2], guild);
                             textChannel.send("Der Bewerber wurde erfolgreich registriert!");
                             Logger.log("INFO","CreatedApplication", {
                                 "Sender": member.displayName,
@@ -59,7 +61,7 @@ export class ApplicantCommand implements ICommand {
                             return;
                         }
 
-                        this.removeApplicant(args[1]);
+                        this.removeApplicant(args[1], guild);
                         textChannel.send("Der Bewerber wurde erfolgreich gelöscht!");
                         Logger.log("INFO", "RemoveApplication", {
                             "Sender": member.displayName,
@@ -81,7 +83,7 @@ export class ApplicantCommand implements ICommand {
                             return;
                         }
 
-                        this.archiveApplicant(args[1]);
+                        this.archiveApplicant(args[1], guild);
                         textChannel.send("Der Bewerber wurde erfolgreich archiviert!");
                         Logger.log("INFO", "ArchiveApplication", {
                             "Sender": member.displayName,
@@ -103,7 +105,7 @@ export class ApplicantCommand implements ICommand {
                             return;
                         }
 
-                        this.stopPoll(args[1]);
+                        this.stopPoll(args[1], guild);
                         textChannel.send("Der Abstimmung des Bewerbers wurde erfolgreich ausgewertet!");
                         Logger.log("INFO", "StopApplicationPoll", {
                             "Sender": member.displayName,
@@ -118,9 +120,7 @@ export class ApplicantCommand implements ICommand {
         return true;
     }
 
-    private async removeApplicant(name :string) :Promise<void> {
-        const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
-
+    private async removeApplicant(name :string, guild: Guild) :Promise<void> {
         if(DataHandler.data.hasOwnProperty(name)) {
             const {channelId} = DataHandler.data[name];
             await guild.channels.resolve(channelId).delete();
@@ -129,25 +129,22 @@ export class ApplicantCommand implements ICommand {
         }
     }
 
-    private async archiveApplicant(name :string) :Promise<void> {
-        const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
+    private async archiveApplicant(name :string, guild: Guild) :Promise<void> {
 
         if(DataHandler.data.hasOwnProperty(name)) {
             const {channelId} = DataHandler.data[name];
             const channel :GuildChannel = await guild.channels.resolve(channelId);
             await channel.setParent(DiscordBot.ARCHIVE_CATEGORY);
 
-            await this.stopPoll(name);
+            await this.stopPoll(name, guild);
 
             delete DataHandler.data[name];
             DataHandler.saveToFile();
         }
     }
 
-    private async stopPoll(name :string) :Promise<void> {
+    private async stopPoll(name :string, guild: Guild) :Promise<void> {
         if(!DataHandler.data[name].poll) return;
-
-        const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
 
         if(DataHandler.data.hasOwnProperty(name)) {
             const {channelId, messageId, url} = DataHandler.data[name];
@@ -182,11 +179,9 @@ export class ApplicantCommand implements ICommand {
         }
     }
 
-    private async addApplicant(name :string, post :string) :Promise<void> {
+    private async addApplicant(name :string, post :string, guild: Guild) :Promise<void> {
 
-        const guild = await this.client.guilds.fetch(DiscordBot.SERVER_ID);
-
-        await this.removeApplicant(name);
+        await this.removeApplicant(name, guild);
 
         let msg :Message
         const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumsbeitrag: ${post}`});
