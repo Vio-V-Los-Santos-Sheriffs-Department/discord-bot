@@ -73,7 +73,7 @@ export class ApplicantCommand implements ICommand {
                             });
                         }
                     } else {
-                        textChannel.send("!applicant add <NAME> <URL> <Dauer>");
+                        textChannel.send("!applicant padd <NAME> <URL> <Dauer>");
                     }
                     break;
                 case "remove": // entferne einen Bewerber entgültig
@@ -211,12 +211,12 @@ export class ApplicantCommand implements ICommand {
         await this.removeApplicant(name, guild);
 
         let msg :Message
-        const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumsbeitrag: ${post}`});
+        const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumbeitrag: ${post}`});
 
         if (duration) {
-            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post} \r Praktikumsdauer: ${duration}`);
+            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumbeitrag: ${post} \r Praktikumsdauer: ${duration}`);
         } else {
-            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumsbeitrag: ${post}`);
+            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumbeitrag: ${post}`);
         }
 
         await msg.pin();
