@@ -214,7 +214,7 @@ export class ApplicantCommand implements ICommand {
         const channel :TextChannel = await guild.channels.create(name, {type: "text", parent: DiscordBot.MAIN_CATEGORY, topic: `Forumbeitrag: ${post}`});
 
         if (duration) {
-            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumbeitrag: ${post} \r Praktikumsdauer: ${duration}`);
+            msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumbeitrag: ${post} \r Praktikumsdauer: ${duration} Tage`);
         } else {
             msg = await channel.send(`${DiscordBot.MENTION_CALLED} Abstimmung! \r Name: ${name} \r Forumbeitrag: ${post}`);
         }
